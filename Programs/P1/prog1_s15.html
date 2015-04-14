@@ -1,0 +1,961 @@
+
+<!-- saved from url=(0056)http://courses.washington.edu/css430/prog/prog1_s15.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><link rel="stylesheet" type="text/css" href="./prog1_s15_files/bootstrap.css">
+   <!-- ====================== STYLE DEFINITIONS ======================== --> 
+   <style type="text/css">
+      body {background-color: #EEEEEE; padding-left: 20px;margin-top: 0px;margin-left: 0px}
+
+      .f0{font: 28px 'Arial';line-height: 30px}
+      .f1{font: 24px 'Arial';line-height: 26px}
+      .f2{font: 22px 'Arial';line-height: 24px}
+      .f3{font: 20px 'Arial';line-height: 22px}
+      .f4{font: 18px 'Arial';line-height: 20px}
+      .f5{font: 16px 'Arial';line-height: 18px}
+      .f6{font: 14px 'Arial';line-height: 16px}
+      .f7{font: 12px 'Arial';line-height: 14px}
+
+      .p5 {padding-left: 42px;margin-top: 10px;margin-bottom: 0px}
+      .t0 {margin-top: 10px;margin-bottom: 0px}
+      .h0 {font-weight: bold; margin-top: 10px;margin-bottom: 4px}
+      .p0 {margin-top: 2px;margin-bottom: 4px}
+      .tb1{table-layout: fixed; font-size: 13px; font-family: arial,sans,sans-serif; border-collapse: collapse; border: 1px solid #000000} 
+      .tb2{margin-left:auto; margin-right:auto; table-layout: fixed; font-size: 13px; font-family: arial,sans,sans-serif; border: 0px solid #000000; width: 780px; }
+      .td0{padding: 0px 3px 0px 3px; vertical-align: bottom; background-color: #cfe2f3; font-weight: bold;   color: #000000; text-align: center; direction: ltr; border: 1px solid #000000}
+      .td1{padding: 0px 3px 0px 3px; vertical-align: center; background-color: #ffffff; font-weight: normal; color: #000000; text-align: center; direction: ltr; border: 1px solid #000000}
+      .td2{padding: 0px 3px 0px 3px; vertical-align: bottom; background-color: #ffffff; font-weight: normal; color: #000000; text-align: center; direction: ltr; border-right: 1px solid #000000; border-bottom: 1px solid #000000; border-top: 1px solid #000000}
+      .td3{padding: 0px 3px 0px 3px; vertical-align: bottom; background-color: #ffffff; font-weight: normal; color: #000000; text-align: left;   direction: ltr; border-right: 1px solid #000000; border-bottom: 1px solid #000000; border-top: 1px solid #000000}
+      .td4{padding: 0px 3px 0px 3px; vertical-align: middle; background-color: #ffffff; font-weight: normal; color: #000000; text-align: center; direction: ltr; border-right: 1px solid #000000; border-bottom: 1px solid #000000; border-top: 1px solid #000000}
+      .td5{padding: 0px 3px 0px 3px; vertical-align: bottom; background-color: #ffffff; font-weight: normal; color: #000000; text-align: center; direction: ltr; border-right: 1px solid #000000; border-bottom: 1px solid #000000; border-top: 1px solid #000000}
+      .td6{padding: 0px 3px 0px 3px; vertical-align: bottom; background-color: #ffffff; font-weight: normal; color: #000000; text-align: center; direction: ltr; border-right: 1px solid #000000; border-bottom: 1px solid #000000; border-top: 1px solid #000000} 
+      .td7{padding: 15px 15px 15px 15px; border-radius: 7px; vertical-align: center; background-color: #dddddd; font-weight: bold;   color: #000000; text-align: center; direction: ltr;}
+      #heading{text-align:center; position:relative; overflow: hidden;margin: 0px 0px 0px 20px; padding: 0px;border: none;width: 900px} 
+      #section_1{text-align:left; position:relative; overflow: hidden;margin: 0px 0px 0px 20px; padding: 0px;border: none;width: 900px; font: 19px 'Calibri'} 
+
+   </style>
+<style type="text/css"></style></head> 
+
+
+<body>
+   <div id="heading">
+      <p class="t0 f0">CSS 430<br>
+         Program 1: System Calls and Shell<br>
+      </p>
+      <p class="t0 f2">Due Date: See the syllabus<br>
+      </p>
+      <hr>
+   </div>
+
+
+   <div id="section_1">
+
+      <h3 class="h0">0. Attention</h3>
+      <p class="p0">
+         This series of programming assignments is a step-by-step
+         implementation of OS simulator in Java. Since all the assignments were
+         comprehensively designed and linked to each other, it is quite
+         difficult to drastically change their questions every quarter. Thus,
+         if you were to contact with the former CSS430 students, you might get
+         the answers, which is nevertheless considered as plagiarism.
+      </p>
+
+      <p class="p0">
+         Please note that you must independently work on all programming
+         assignments except the final project. The instructor keeps the code of
+         all the former students in his database, compares your code with the
+         database contents, and will <u>never tolerate any academic
+         dishonesty. In fact, some students have been sent to the vice
+         chancellor's office when their plagiarism were found.</u>
+      </p>
+
+      <h3 class="h0">1. Purpose</h3>
+      <p class="p0">
+         This assignment intends (1) to familiarize you with Linux programming
+         using several system calls such as fork, execlp, wait, pipe, dup2, and
+         close, and (2) to help you understand that, from the kernel's view
+         point, the <i>shell</i> is simply viewed as an application program
+         that uses system calls to spawn and to terminate other user
+         programs. You will also become familiar with the <i>ThreadOS</i>
+         operating system simulator in part 2 of this assignment.
+      </p>
+
+      <!-- ================================================================ -->
+      <!-- ======================== Shell Section ========================= -->
+      <!-- ================================================================ -->
+      <h3 class="h0">2. Shell</h3>
+      <p class="p0">
+         This section explains the behavior and the language syntax of the Unix
+         <i>shell</i>.
+      </p>
+
+      <h4 class="h0">Command interpretation</h4> 
+      <p class="p0">
+         The <i>shell</i> is a command interpreter that provides Unix users
+         with an interface to the underlying operating system. It interprets
+         user commands and executes them as independent processes. The
+         <i>shell</i> also allows users to code an interpretive script using
+         simple programming constructs such as <i>if</i>, <i>while</i> and
+         <i>for</i>, etc. With <i>shell</i> scripting, users can create customized
+         automation shell tasks.
+      </p>
+
+      <p class="p0">
+         The behavior of <i>shell</i> simply repeats:
+         </p><ol>
+            <li>Displaying a prompt to indicate that it is ready to accept a next
+               command from its user,
+            </li>
+            <li>Reading a line of keyboard input as a command, and
+            </li>
+            <li>Spawning and having a new process execute the user command.
+            </li>
+         </ol>
+      <p></p>
+
+      <p class="p0">
+         The prompt symbols frequently used include for example:
+         </p><pre><code>hostname$</code></pre>
+         or in the case the UWB Linux lab servers, a host name followed 
+         by a ':' symbol, and a '~' for the current user as follows:
+         <pre><code>uw1-320-lab:~$</code></pre>
+      <p></p>
+
+      <p class="p0">
+         How does the <i>shell</i> execute a user command? The mechanism
+         follows the steps given below:
+         </p><ol> 
+            <li> The <i>shell</i> locates an executable file whose name is
+               specified in the first string given from a keyboard input.
+            </li>
+            <li> It creates a child process by duplicating itself.
+            </li>
+            <li> The duplicated shell overloads its process image with the executable file.
+            </li>
+            <li> The overloaded process receives all the remaining strings given
+               from a keyboard input, and starts a command execution.
+            </li>
+         </ol>
+      <p></p>
+
+      <p class="p0">
+         For instance, assume that your current working directory includes
+         the <i>a.out</i> executable file and you have typed the following line
+         input from your keyboard.
+         </p><pre><code>uw1-320-lab:~$ ./a.out a b c</code></pre>
+      <p></p>
+
+      This means that the <i>shell</i> duplicates itself and has this
+      duplicated process execute <i>a.out</i> that receives a, b, and c 
+      as its arguments.
+
+      <p class="p0">
+         The <i>shell</i> has some built-in commands that changes its
+         current status rather than executing a user program. (Note that user programs
+         are distinguished as external commands from the <i>shell</i> built-in
+         commands.) For instance,
+         </p><pre><code>uw1-320-lab:~$ cd public_html</code></pre>
+
+         changes the <i>shell</i>'s current working directory to
+         <i>public_html</i>. Thus, <i>cd</i> is one of the <i>shell</i>
+         built-in commands. 
+      <p></p>
+
+      <p class="p0"> The <i>shell</i> can receive two or more commands at a time from a
+         keyboard input. The symbols ';' and '&amp;' are used as a delimiter
+         specifying the end of each single command. If a command is delimited
+         by ';', the <i>shell</i> spawns a new process to execute this command,
+         waits for the process to be terminated, and thereafter continues to
+         interpret the next command. If a command is delimited by '&amp;', the
+         <i>shell</i> execution continues by interpreting the next command without
+         waiting for the completion of the current command.
+
+         </p><pre><code>uw1-320-lab:~$ who &amp; ls &amp; date</code></pre> 
+
+         executes <i>who</i>, <i>ls</i>, and <i>date</i> concurrently. Note
+         that, if the last command does not have an delimiter, the <i>shell</i>
+         assumes that it is implicitly delimited by ';'. In the above example,
+         the <i>shell</i> waits for the completion of <i>date</i>. Taking 
+         everything in consideration, the more specific behavior of the 
+         <i>shell</i> is therefore:
+      <p></p>
+      <ol>
+         <li>Displaying a prompt to show that it is ready to accept a new line 
+            input from the keyboard, 
+         </li>
+         <li>Reading a keyboard input,</li>
+         <li>Repeating the following interpretation till reaching the end of input line:</li>
+         <ul>
+            <li>Changing its current working status if a command is built-in, otherwise</li>
+            <li>Spawning a new process and having it execute this external command.</li>
+            <li>Waiting for the process to be terminated if the command is delimited by ';'.</li>
+         </ul>
+      </ol>
+
+      <h4 class="h0">I/O redirection and pipeline</h4>
+      <p class="p0">
+         One of the <i>shell</i>'s interesting features is I/O redirection.
+         </p><pre><code>uw1-320-00% a.out &lt; file1 &gt; file2</code></pre>
+         redirects <i>a.out</i>'s standard input and output to <i>file1</i> and
+         <i>file2</i> respectively, so that <i>a.out</i> reads from
+         <i>file1</i> and writes to <i>file2</i> as if it were reading from a
+         keyboard and printing out to a monitor. Another convenience feature is
+         pipeline.
+         <pre><code>uw1-320-lab:~$  command1 | command2 | command3</code></pre>
+         connects <i>command1</i>'s standard output to <i>command2</i>'s
+         standard input, and also connects <i>command2</i>'s standard output to
+         <i>command3</i>'s standard input. For instance,
+
+         <pre><code>uw1-320-lab:~$  who | wc -l</code></pre>
+
+         first executes the <i>who</i> command that prints out a list of
+         current users. This output is not displayed but is rather passed to
+         <i>wc</i>'s standard input. Thereafter, the <i>wc</i> is executed with
+         its <i>-l</i> option. It reads the list of current users and prints
+         out #lines of this list to the standard output. As a result, you will
+         get the number of the current users.
+      <p></p>
+      <h4 class="h0">Shell implementation techniques</h4>
+      <p class="p0">
+         Whenever the <i>shell</i> executes a new command, it spawns a child
+         <i>shell</i> and lets the child execute the command. This behavior is
+         implemented with the <b>fork</b> and <b>execlp</b> system calls. If the
+         <i>shell</i> receives ";" as a command delimiter or receives no
+         delimiter, it must wait for the termination of the spawned child,
+         which is implemented with the <b>wait</b> system call. If it receives
+         "&amp;" as a command delimiter, it does not have to wait for the child to
+         be terminated.
+
+         If the <i>shell</i> receives a sequence of commands, each concatenated
+         with "|", it must recursively create children whose number is the
+         same as that of commands. Which child executes which command is a kind
+         of tricky. The farthest offspring will execute the first command, the
+         grand child will execute the 2nd last, and the child will execute the
+         last command. Their standard input and output must be redirected
+         accordingly using the <b>pipe</b> and <b>dup2</b> system calls.
+
+         The following diagrams describe how to execute "who | wc -l", and how
+         to use the <b>pipe</b> system call.
+      </p><br>
+
+      <!-- ================ Images for Forks and Pipes ==================== -->
+      <table class="tb2">
+         <tbody><tr>
+            <td class="td7"><img src="./prog1_s15_files/shell.png" align="middle" width="750"></td>
+         </tr>            
+      </tbody></table><br>
+
+      <table class="tb2">
+         <tbody><tr>
+            <td class="td7"><img src="./prog1_s15_files/pipe.png" align="middle" width="750"></td>
+         </tr>            
+      </tbody></table><br>
+      <!-- ================================================================ -->
+
+      <!-- ================================================================ -->
+      <!-- ====================== Thread OS Section ======================= -->
+      <!-- ================================================================ -->
+      <h3 class="h0">3. ThreadOS</h3>
+      <p class="p0">
+         <i>ThreadOS</i> is an operating system simulator that has been
+         designed in Java for our CSS430 course. You need a working knowledge of
+         <i>ThreadOS</i> in order to work on the assignment in part 2. The basic
+         features will be explained in the 2nd week's lecture. If you have
+         understood the features discussed in the lecture, you may skip to <a href="http://courses.washington.edu/css430/prog/prog1_s15.html#Statement">Section 4, Statement of Work</a>.
+      </p>
+
+      <p class="p0">
+         Through this series of assignments, you are to implement and/or to
+         enhance some portions of <i>ThreadOS</i>. <i>ThreadOS</i> loads Java
+         programs that have been derived from the <i>Thread</i> class, manages
+         them as user processes, and provides them with some basic operating
+         system services. Those services include thread spawn, thread
+         termination, disk operations, and even standard input/output. 
+         <i>ThreadOS</i> receives all service requests as a form of simulated 
+         interrupt from each user thread, handles them, and returns a status
+         value to the interrupting thread.
+      </p>
+
+      <h4 class="h0">Structure</h4>
+
+      <p class="p0">
+         <i>ThreadOS</i> consists of several components:
+      </p>
+      <table border="1">
+         <tbody><tr valign="baseline">
+            <td class="td0">Component</td>
+            <td class="td0">Java/Class</td>
+            <td class="td0">Description</td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">Boot</td> 
+            <td class="td1">Boot.java</td> 
+            <td class="td3">invokes a <i>BOOT</i> system call to have
+               <i>Kernel</i> initialize its internal data, power on <i>Disk</i>,
+               start the <i>Scheduler</i> thread, and finally spawn the
+               <i>Loader</i> thread.
+            </td>
+         </tr>
+
+         <tr valign="baseline">
+            <td class="td1">Kernel</td>
+            <td class="td1">Kernel.java</td>
+            <td class="td3">receives an interrupt, services it if possible,
+               otherwise forwards its request to <i>Scheduler</i> or <i>Disk</i>, and 
+               returns a completion status.
+            </td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">Disk</td> 
+            <td class="td1">Disk.java</td> 
+            <td class="td3">simulates a slow disk device composed of 1000 blocks,
+               each containing 512 bytes. Those blocks are divided into 10 tracks,
+               each of which thus includes 100 blocks. The disk has three commands:
+               <i>read</i>, <i>write</i>, and <i>sync</i> detailed in the assignment 
+               3, 4, and 5.
+            </td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">Scheduler</td> 
+            <td class="td1">Scheduler.java, TCB.java</td> 
+            <td class="td3">receives a Thread object that <i>Kernel</i>
+               instantiated upon receiving an <i>EXEC</i> system call, allocates a new
+               <i>TCB(Thread Control Block)</i> to this thread, enqueues the
+               <i>TCB</i> into its ready queue, and schedules its execution in
+               a round robin fashion.
+            </td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">SysLib</td> 
+            <td class="td1">SysLib.java</td> 
+            <td class="td3">is a utility that provides user threads with a
+               convenient style of system calls and converts them into corresponding
+               interrupts passed to <i>Kernel</i>.
+            </td>
+         </tr>
+      </tbody></table><br>
+
+      <!-- ================ Image for ThreadOS ==================== -->
+      <table class="tb2">
+         <tbody><tr>
+            <td class="td7"><img src="./prog1_s15_files/ThreadOS.png" align="middle" width="750"></td>
+         </tr>            
+      </tbody></table><br>
+
+      <p class="p0">
+         To start <i>ThreadOS</i>, simply type:
+         </p><pre><code>uw1-320-lab:~$ java Boot
+            ThreadOS ver 1.0:
+            Type ? for help
+            threadOS: a new thread (thread=Thread[Thread-3,2,main] tid=0 pid=-1)
+         --&gt;</code></pre>
+
+         <i>Boot</i> initializes <i>Kernel</i> data, powers on <i>Disk</i> and
+         starts <i>Scheduler</i>. It finally launches <i>Loader</i> that then
+         carries out one of the following commands:
+      <p></p>
+
+      <table>
+         <tbody><tr valign="baseline"> 
+            <td class="td1">?</td>
+            <td class="td3">prints out its usage.</td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">l user_program</td>
+            <td class="td3">starts <i>user_program</i> as an independent user thread and waits for its termination.</td>
+         </tr>
+
+         <tr valign="baseline"> 
+            <td class="td1">q</td>
+            <td class="td3">synchronizes disk data and terminates <i>ThreadOS</i></td>
+         </tr>
+      </tbody></table><br>
+
+      <p class="p0"> 
+         Note that <i>Loader</i> is not a <i>shell</i>. It simply launches and
+         waits for the completion of a user program (which may behave as a
+         <i>shell</i>). From <i>ThreadOS</i>' point of view, there is no
+         distinction between <i>Loader</i> and the other user programs.
+      </p>
+
+      <h4 class="h0">User Programs</h4>
+      <p class="p0"> 
+         A user program must be a Java thread. Java threads are execution
+         entities concurrently running in a Java application. They maintain
+         their own stacks and program counter but share static variables in
+         their application. At least one thread, (i.e., the <i>main</i> thread)
+         is automatically instantiated when an application starts a <i>main</i>
+         function. Threads other than the <i>main</i> thread can be dynamically
+         created in the similar way to instantiate a new class object using
+         <i>new</i>. Once their <i>start</i> method is called, they keep
+         executing their own <i>run</i> method independently from the calling
+         function such as <i>main</i>. Java threads can be defined as a
+         subclass of the <a href="http://docs.oracle.com/javase/7/docs/api/">
+         <i>Thread</i></a> class.
+      </p>
+
+      <p class="p0"> 
+         The following Java thread prints out a word given in <i>args[0]</i>
+         repeatedly every <i>loop</i> number of dummy iterations. The
+         <i>loop</i> is given in <i>args[1]</i>.
+      </p>
+      <script src="./prog1_s15_files/508ca4b18bada9500bbf.js">PingPong Infinite</script><link rel="stylesheet" href="https://gist-assets.github.com/assets/embed-8bf0013c72fb64f0bb1bc1872b43e39e.css"><div id="gist20948559" class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            
+
+
+
+    <div class="file-data">
+      <table cellpadding="0" cellspacing="0" class="lines highlight">
+        <tbody><tr>
+          <td class="line-numbers">
+            <span class="line-number" id="file-pingpong-java-L1" rel="file-pingpong-java-L1">1</span>
+            <span class="line-number" id="file-pingpong-java-L2" rel="file-pingpong-java-L2">2</span>
+            <span class="line-number" id="file-pingpong-java-L3" rel="file-pingpong-java-L3">3</span>
+            <span class="line-number" id="file-pingpong-java-L4" rel="file-pingpong-java-L4">4</span>
+            <span class="line-number" id="file-pingpong-java-L5" rel="file-pingpong-java-L5">5</span>
+            <span class="line-number" id="file-pingpong-java-L6" rel="file-pingpong-java-L6">6</span>
+            <span class="line-number" id="file-pingpong-java-L7" rel="file-pingpong-java-L7">7</span>
+            <span class="line-number" id="file-pingpong-java-L8" rel="file-pingpong-java-L8">8</span>
+            <span class="line-number" id="file-pingpong-java-L9" rel="file-pingpong-java-L9">9</span>
+            <span class="line-number" id="file-pingpong-java-L10" rel="file-pingpong-java-L10">10</span>
+            <span class="line-number" id="file-pingpong-java-L11" rel="file-pingpong-java-L11">11</span>
+            <span class="line-number" id="file-pingpong-java-L12" rel="file-pingpong-java-L12">12</span>
+            <span class="line-number" id="file-pingpong-java-L13" rel="file-pingpong-java-L13">13</span>
+            <span class="line-number" id="file-pingpong-java-L14" rel="file-pingpong-java-L14">14</span>
+          </td>
+          <td class="line-data">
+            <pre class="line-pre"><div class="line" id="file-pingpong-java-LC1"><span class="pl-s">public</span> <span class="pl-s">class</span> <span class="pl-en">PingPong</span> <span class="pl-s">extends</span> <span class="pl-e">Thread</span> {
+</div><div class="line" id="file-pingpong-java-LC2">   <span class="pl-s">private</span> <span class="pl-stj">String</span> word;
+</div><div class="line" id="file-pingpong-java-LC3">   <span class="pl-s">private</span> <span class="pl-st">int</span> loop;
+</div><div class="line" id="file-pingpong-java-LC4">   <span class="pl-s">public</span> <span class="pl-en">PingPong</span>( <span class="pl-st">String</span>[] <span class="pl-v">args</span> ) {
+</div><div class="line" id="file-pingpong-java-LC5">      word <span class="pl-k">=</span> args[<span class="pl-c1">0</span>];
+</div><div class="line" id="file-pingpong-java-LC6">      loop <span class="pl-k">=</span> <span class="pl-stj">Integer</span><span class="pl-k">.</span>parseInt( args[<span class="pl-c1">1</span>] );
+</div><div class="line" id="file-pingpong-java-LC7">   }
+</div><div class="line" id="file-pingpong-java-LC8">   <span class="pl-s">public</span> <span class="pl-st">void</span> <span class="pl-en">run</span>( ) {
+</div><div class="line" id="file-pingpong-java-LC9">      <span class="pl-k">for</span> ( <span class="pl-st">int</span> j <span class="pl-k">=</span> <span class="pl-c1">0</span>; j <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>; j<span class="pl-k">++</span> ) {
+</div><div class="line" id="file-pingpong-java-LC10">         <span class="pl-stj">SysLib</span><span class="pl-k">.</span>cout( word <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span> );
+</div><div class="line" id="file-pingpong-java-LC11">         <span class="pl-k">for</span> (<span class="pl-st">int</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>; i <span class="pl-k">&lt;</span> loop; i<span class="pl-k">++</span> );
+</div><div class="line" id="file-pingpong-java-LC12">      }
+</div><div class="line" id="file-pingpong-java-LC13">   }
+</div><div class="line" id="file-pingpong-java-LC14">}
+</div></pre>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+
+          </div>
+          <div class="gist-meta">
+            <a href="https://gist.github.com/aerodame/508ca4b18bada9500bbf/raw/PingPong.java" style="float:right">view raw</a>
+            <a href="https://gist.github.com/aerodame/508ca4b18bada9500bbf#file-pingpong-java">PingPong.java</a>
+            hosted with &#10084; by <a href="https://github.com/">GitHub</a>
+          </div>
+        </div>
+</div>
+
+
+      <p class="p0"> 
+         If you write the following <i>main</i> function:
+      </p>
+      <script src="./prog1_s15_files/5e52f57b6865a95d2fd6.js"></script><link rel="stylesheet" href="https://gist-assets.github.com/assets/embed-8bf0013c72fb64f0bb1bc1872b43e39e.css"><div id="gist20947891" class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            
+
+
+
+    <div class="file-data">
+      <table cellpadding="0" cellspacing="0" class="lines highlight">
+        <tbody><tr>
+          <td class="line-numbers">
+            <span class="line-number" id="file-threaddriver-java-L1" rel="file-threaddriver-java-L1">1</span>
+            <span class="line-number" id="file-threaddriver-java-L2" rel="file-threaddriver-java-L2">2</span>
+            <span class="line-number" id="file-threaddriver-java-L3" rel="file-threaddriver-java-L3">3</span>
+            <span class="line-number" id="file-threaddriver-java-L4" rel="file-threaddriver-java-L4">4</span>
+            <span class="line-number" id="file-threaddriver-java-L5" rel="file-threaddriver-java-L5">5</span>
+            <span class="line-number" id="file-threaddriver-java-L6" rel="file-threaddriver-java-L6">6</span>
+            <span class="line-number" id="file-threaddriver-java-L7" rel="file-threaddriver-java-L7">7</span>
+            <span class="line-number" id="file-threaddriver-java-L8" rel="file-threaddriver-java-L8">8</span>
+            <span class="line-number" id="file-threaddriver-java-L9" rel="file-threaddriver-java-L9">9</span>
+            <span class="line-number" id="file-threaddriver-java-L10" rel="file-threaddriver-java-L10">10</span>
+            <span class="line-number" id="file-threaddriver-java-L11" rel="file-threaddriver-java-L11">11</span>
+          </td>
+          <td class="line-data">
+            <pre class="line-pre"><div class="line" id="file-threaddriver-java-LC1"><span class="pl-s">public</span> <span class="pl-s">class</span> <span class="pl-en">ThreadDriver</span> {
+</div><div class="line" id="file-threaddriver-java-LC2">   <span class="pl-s">public</span> <span class="pl-s">static</span> <span class="pl-st">void</span> <span class="pl-en">main</span>( <span class="pl-st">String</span>[] <span class="pl-v">args</span> ) {
+</div><div class="line" id="file-threaddriver-java-LC3">      <span class="pl-stj">String</span> args[<span class="pl-c1">2</span>];
+</div><div class="line" id="file-threaddriver-java-LC4">&nbsp;
+</div><div class="line" id="file-threaddriver-java-LC5">      args[<span class="pl-c1">0</span>] <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>ping<span class="pl-pds">"</span></span>; args[<span class="pl-c1">1</span>] <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>10000<span class="pl-pds">"</span></span>;
+</div><div class="line" id="file-threaddriver-java-LC6">      <span class="pl-k">new</span> <span class="pl-stj">PingPong</span>( args )<span class="pl-k">.</span>start( );
+</div><div class="line" id="file-threaddriver-java-LC7">&nbsp;
+</div><div class="line" id="file-threaddriver-java-LC8">      args[<span class="pl-c1">0</span>] <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>PING<span class="pl-pds">"</span></span>; args[<span class="pl-c1">1</span>] <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>90000<span class="pl-pds">"</span></span>;
+</div><div class="line" id="file-threaddriver-java-LC9">      <span class="pl-k">new</span> <span class="pl-stj">PingPong</span>( args )<span class="pl-k">.</span>start( );
+</div><div class="line" id="file-threaddriver-java-LC10">   }
+</div><div class="line" id="file-threaddriver-java-LC11">}
+</div></pre>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+
+          </div>
+          <div class="gist-meta">
+            <a href="https://gist.github.com/aerodame/5e52f57b6865a95d2fd6/raw/ThreadDriver.java" style="float:right">view raw</a>
+            <a href="https://gist.github.com/aerodame/5e52f57b6865a95d2fd6#file-threaddriver-java">ThreadDriver.java</a>
+            hosted with &#10084; by <a href="https://github.com/">GitHub</a>
+          </div>
+        </div>
+</div>
+
+
+      <p class="p0">
+         it will instantiate two <i>PingPong</i> threads, one printing out "ping" 
+         every 10000 dummy iterations and the other printing out "PING" every 
+         90000 dummy iterations.
+      </p><br>
+
+      <p class="p0"> <i>ThreadOS Loader</i> actually takes care of this
+         thread-instantiating part of <i>main</i> function. Once you invoke
+         <i>ThreadOS</i>, <i>Loader</i> waits for a <i>l</i> command, say <i>"l
+         PingPong ping 10000"</i>. Then, it will load your
+         <i>PingPong</i> class into the memory, instantiate its object, pass a
+         String array including <i>ping</i> and <i>10000</i> as arguments to
+         this thread, and wait for its termination. <b>Note that in general Java
+         threads can receive any type of and any number of arguments, however
+         <i>ThreadOS</i> restricts its user programs to receive only a String
+         array as their argument.</b>
+      </p><br>
+
+      <p class="p0">
+         Java itself provides various classes and methods that invoke real OS
+         system calls such as <i>System.out.println</i> and <i>sleep</i>. Since
+         <i>ThreadOS</i> is an operating systems simulator, user programs
+         running on <i>ThreadOS</i> are prohibited from using real OS system
+         calls. Prohibited classes include but are not limited to:
+      </p>
+
+      <sl>
+         <li>java.lang.System</li>
+         <li>java.lang.Thread</li>
+         <li>java.io.*</li>
+      </sl><br>
+
+      <p class="p0">
+         Instead, user programs are provided with <i>ThreadOS</i>-unique system
+         calls including standard I/O, disk access, and thread control. 
+         Therefore, <i>System.out.print( word + " " );</i> should be replaced 
+         with one of <i>ThreadOS</i>-unique systems calls:
+         </p><pre>SysLib.cout( word + " " );</pre>
+      <p></p>
+
+      <p class="p0">
+         While Java threads can be terminated upon a simple return from
+         their <i>run</i> method, <i>ThreadOS</i> needs an explicit system call
+         to terminate the current user thread.
+         </p><pre><code>SysLib.exit( );</code></pre>
+
+         Thread termination is a part of thread control, thus is one of the 
+         <i>ThreadOS</i> services. Since the above example of user thread 
+         falls into an infinite loop, we need to revise it so that
+         this example code safely terminates the invoked thread and resumes
+         <i>Loader</i>.
+      <p></p>
+
+      <script src="./prog1_s15_files/b04b3fbd8964d43b350e.js"></script><link rel="stylesheet" href="https://gist-assets.github.com/assets/embed-8bf0013c72fb64f0bb1bc1872b43e39e.css"><div id="gist20948246" class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            
+
+
+
+    <div class="file-data">
+      <table cellpadding="0" cellspacing="0" class="lines highlight">
+        <tbody><tr>
+          <td class="line-numbers">
+            <span class="line-number" id="file-pingpong-java-L1" rel="file-pingpong-java-L1">1</span>
+            <span class="line-number" id="file-pingpong-java-L2" rel="file-pingpong-java-L2">2</span>
+            <span class="line-number" id="file-pingpong-java-L3" rel="file-pingpong-java-L3">3</span>
+            <span class="line-number" id="file-pingpong-java-L4" rel="file-pingpong-java-L4">4</span>
+            <span class="line-number" id="file-pingpong-java-L5" rel="file-pingpong-java-L5">5</span>
+            <span class="line-number" id="file-pingpong-java-L6" rel="file-pingpong-java-L6">6</span>
+            <span class="line-number" id="file-pingpong-java-L7" rel="file-pingpong-java-L7">7</span>
+            <span class="line-number" id="file-pingpong-java-L8" rel="file-pingpong-java-L8">8</span>
+            <span class="line-number" id="file-pingpong-java-L9" rel="file-pingpong-java-L9">9</span>
+            <span class="line-number" id="file-pingpong-java-L10" rel="file-pingpong-java-L10">10</span>
+            <span class="line-number" id="file-pingpong-java-L11" rel="file-pingpong-java-L11">11</span>
+            <span class="line-number" id="file-pingpong-java-L12" rel="file-pingpong-java-L12">12</span>
+            <span class="line-number" id="file-pingpong-java-L13" rel="file-pingpong-java-L13">13</span>
+            <span class="line-number" id="file-pingpong-java-L14" rel="file-pingpong-java-L14">14</span>
+            <span class="line-number" id="file-pingpong-java-L15" rel="file-pingpong-java-L15">15</span>
+            <span class="line-number" id="file-pingpong-java-L16" rel="file-pingpong-java-L16">16</span>
+          </td>
+          <td class="line-data">
+            <pre class="line-pre"><div class="line" id="file-pingpong-java-LC1"><span class="pl-s">public</span> <span class="pl-s">class</span> <span class="pl-en">PingPong</span> <span class="pl-s">extends</span> <span class="pl-e">Thread</span> {
+</div><div class="line" id="file-pingpong-java-LC2">   <span class="pl-s">private</span> <span class="pl-stj">String</span> word;
+</div><div class="line" id="file-pingpong-java-LC3">   <span class="pl-s">private</span> <span class="pl-st">int</span> loop;
+</div><div class="line" id="file-pingpong-java-LC4">   <span class="pl-s">public</span> <span class="pl-en">PingPong</span>( <span class="pl-st">String</span>[] <span class="pl-v">args</span> ) {
+</div><div class="line" id="file-pingpong-java-LC5">      word <span class="pl-k">=</span> args[<span class="pl-c1">0</span>];
+</div><div class="line" id="file-pingpong-java-LC6">      loop <span class="pl-k">=</span> <span class="pl-stj">Integer</span><span class="pl-k">.</span>parseInt( args[<span class="pl-c1">1</span>] );
+</div><div class="line" id="file-pingpong-java-LC7">   }
+</div><div class="line" id="file-pingpong-java-LC8">   <span class="pl-s">public</span> <span class="pl-st">void</span> <span class="pl-en">run</span>( ) {
+</div><div class="line" id="file-pingpong-java-LC9">      <span class="pl-k">for</span> ( <span class="pl-st">int</span> j <span class="pl-k">=</span> <span class="pl-c1">0</span>; j <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>; j<span class="pl-k">++</span> ) {
+</div><div class="line" id="file-pingpong-java-LC10">         <span class="pl-stj">SysLib</span><span class="pl-k">.</span>cout( word <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span> );
+</div><div class="line" id="file-pingpong-java-LC11">         <span class="pl-k">for</span> (<span class="pl-st">int</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>; i <span class="pl-k">&lt;</span> loop; i<span class="pl-k">++</span> );
+</div><div class="line" id="file-pingpong-java-LC12">      }
+</div><div class="line" id="file-pingpong-java-LC13">      <span class="pl-stj">SysLib</span><span class="pl-k">.</span>cout( <span class="pl-s1"><span class="pl-pds">"</span><span class="pl-cce">\n</span><span class="pl-pds">"</span></span> );
+</div><div class="line" id="file-pingpong-java-LC14">      <span class="pl-stj">SysLib</span><span class="pl-k">.</span>exit( );
+</div><div class="line" id="file-pingpong-java-LC15">   }
+</div><div class="line" id="file-pingpong-java-LC16">}
+</div></pre>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+
+          </div>
+          <div class="gist-meta">
+            <a href="https://gist.github.com/aerodame/b04b3fbd8964d43b350e/raw/PingPong.java" style="float:right">view raw</a>
+            <a href="https://gist.github.com/aerodame/b04b3fbd8964d43b350e#file-pingpong-java">PingPong.java</a>
+            hosted with &#10084; by <a href="https://github.com/">GitHub</a>
+          </div>
+        </div>
+</div>
+
+
+      <h4 class="h0">System Calls</h4>
+      <p class="p0">
+         <i>ThreadOS Kernel</i> receives requests from each user thread as
+         interrupts to it. Such an interrupt is performed by calling:
+      </p>
+
+      <p class="p0"></p><pre><code>Kernel.interrupt( int interruptRequestVector, 
+         int trapNumber, 
+         int parameter, 
+         Object args );</code></pre>
+      <p></p>
+      <p class="p0">
+         where <i>interruptRequestVector</i> may be 
+         </p><ul style="list-style-type:none">
+            <li>1: INTERRUPT_SOFTWARE,</li>
+            <li>2: INTERRUPT_DISK, and</li>
+            <li>3: INTERRUPT_IO</li> 
+         </ul>
+      <p></p>
+
+      <p class="p0">
+         <i>trapNumber</i> specifies a request type of software interrupt such as
+         </p><ul style="list-style-type:none">
+            <li>0: BOOT</li>
+            <li>1: EXEC</li>
+            <li>2: WAIT</li>
+            <li>3: KILL, etc.</li> 
+         </ul>
+      <p></p>
+
+      <p class="p0">
+         <i>parameter</i> is a device-specific value to control each device; and
+      </p>
+
+      <p class="p0">
+         <i>args</i> are arguments of each interrupt request.
+      </p>
+
+      <p class="p0"> Since this interrupt method is not an elegant form to a user
+         program,
+         <i>ThreadOS</i> provides a user program with its system library, called
+         <i>SysLib</i> that includes several important system-call functions as
+         shown below. (Unless otherwise mentioned, each of these functions
+         returns 0 on success or -1 on error.)
+      </p>
+
+      <ol>
+         <li><b>SysLib.exec( String args[] )</b> loads the class specified in
+            args[0], instantiates its object, simply passes the following elements
+            of String array, (i.e., args[1], args[2], ...), and starts it as a
+            child thread. It returns a child thread ID on success, otherwise -1.
+         </li>
+
+         <li><b>SysLib.join( )</b> waits for the termination of one of child
+            threads. It returns the ID of the child thread that has woken up the
+            calling thread. If it fails, it returns -1.
+         </li>
+
+         <li><b>SysLib.exit( )</b> terminates the calling thread and wakes up
+            its parent thread if this parent is waiting on join( ).
+         </li> 
+
+         <li><b>SysLib.cin( StringBuffer s )</b> reads keyboard input to the
+            StringBuffer s.
+         </li>
+
+         <li><b>SysLib.cout( String s )</b> prints out the String s to the
+            standard output. Like C's <i>printf</i>, it recognizes '\n' as a
+            new-line character.
+         </li>
+
+         <li><b>SysLib.cerr( String s )</b> prints out the String s to the
+            standard error. Like C's <i>printf</i>, it recognizes '\n' as a
+            new-line character.
+         </li>
+
+         <li><b>SysLib.rawread( int blkNumber, byte[] b )</b> reads one block
+            data to the byte array b from the block specified by blkNumber.
+         </li>
+
+         <li><b>SysLib.rawwrite( int blkNumber, byte[] b )</b> writes one block
+            data from the byte array b to the block specified by blkNumber.
+         </li>
+
+         <li><b>SysLib.sync( )</b> writes back all on-memory data into a
+            disk.
+         </li>
+      </ol>
+
+      <p class="p0">
+         In addition to those system calls, the system library includes several
+         utility functions. One of them is:
+      </p>
+
+      <ol> 
+         <li><b>public static String[] SysLib.stringToArgs( String s )</b> converts a
+            space-delimited string into a String array in that each
+            space-delimited word is stored into a different array element. This call
+            returns such a String array.
+         </li>
+      </ol>
+
+      <h4 class="h0">Other components</h4>
+      <p class="p0">
+         These components include <i>Scheduler</i> and <i>Disk</i>. They will
+         be explained in details as you will need to hack them in the assignments 2
+         - 5.  What you need to know for the assignment 1 is only how to get
+         started and finished with <i>ThreadOS</i>, all of which have been
+         introduced above.
+      </p>
+
+      <h3 class="h0">4. Statement of Work</h3>
+
+      <h4 class="h0">Part 1: Linux System Programming</h4>
+      <p class="p0">
+         Code a C++ program, named <i>processes.cpp</i> that receives one
+         argument, (i.e., argv[1]) upon its invocation and searches how many
+         processes whose name is given in argv[1] are running on the system
+         where your program has been invoked. To be specific, your program
+         should demonstrate the same behavior as:
+      </p>
+
+      <pre><code>$ ps -A | grep argv[1] | wc -l</code></pre>
+      <p class="p0">
+         Implement <i>processes</i> using the following system calls:
+      </p>
+
+      <ol>
+         <li> <b>pid_t fork( void );</b> creates a child process that differs
+           from the parent process only in terms of their process IDs.
+        </li>
+        <li> <b>int execlp( const char *file, const char *arg, ..., (char *)0
+           );</b> replaces the current process image with a new process
+           image that will be loaded from <i>file</i>. The first argument
+           <i>arg</i> must be the same as <i>file</i>.
+        </li>
+        <li> <b>int pipe( int filedes[2] );</b> creates a pair of file
+           descriptors (which point to a pipe structure), and places
+           them in the array pointed to by filedes. <i>filedes[0]</i> is
+           for reading data from the pipe, <i>filedes[1]</i> is for writing
+           data to the pipe.
+        </li>
+        <li> <b>int dup2( int oldfd, int newfd );</b> creates in newfd a copy of 
+           the file descriptor oldfd.
+        </li>
+
+        <li> <b>pid_t wait( int *status );</b> waits for process termination
+         </li><li> <b>int close( int fd );</b> closes a file descriptor.
+         </li>
+      </ol>
+
+
+      <p class="p0">
+         For more details, type the <b>man</b> command from the <i>shell</i>
+         prompt line. Use only the system calls listed above. Do not use the
+         <b>system</b> system call.
+
+         Imitate how the <i>shell</i> performs "ps -A | grep argv[1] | wc -l".
+         In other words, your parent process spawns a child that spawns a
+         grand-child that spawns a great-grand-child. Each process should
+         execute a different command as follows:
+      </p>
+
+      <table border="1">
+         <tbody><tr valign="baseline">
+            <td class="td0">Process</td>
+            <td class="td0">Command</td>
+            <td class="td0">Stdin</td>
+            <td class="td0">Stdout</td>
+         </tr>
+
+         <tr valign="baseline">
+            <td class="td3">Parent</td>
+            <td class="td3">wait for a child</td>
+            <td class="td3">no change</td>
+            <td class="td3">no change</td>
+         </tr>
+
+         <tr valign="baseline">
+            <td class="td3">Child</td>
+            <td class="td3">wc -l</td>
+            <td class="td3">redirected from a grand-child's stdout</td>
+            <td class="td3">no change</td>
+         </tr>
+
+         <tr valign="baseline">
+            <td class="td3">Grand-child</td>
+            <td class="td3">grep argv[1]</td>
+            <td class="td3">redirected from a great-grand-child's stdout</td>
+            <td class="td3">redirected to a child's stdin</td>
+         </tr>
+
+         <tr valign="baseline">
+            <td class="td3">Great-grand-child</td>
+            <td class="td3">ps -A</td>
+            <td class="td3">no change</td>
+            <td class="td3">redirected to a grand-child's stdin</td>
+         </tr>
+      </tbody></table>
+
+      <h4 class="h0">Part 2: ThreadOS Shell Design</h4>
+      <p class="p0">
+         Code <i>Shell.java</i>, a Java thread that will be invoked from
+         <i>ThreadOS Loader</i> and behave as a shell command interpreter.
+      </p>
+      <p class="p0">
+         </p><pre><code>uw1-320-lab:~$ java Boot
+            ThreadOS ver 1.0:
+            Type ? for help
+         --&gt;l Shell
+         l Shell
+         threadOS: a new thread (thread=Thread[Thread-6,2,main] tid=1 pid=0)
+         shell[1]% TestProg1 &amp; TestProg2 &amp;
+         ... A concurrent execution of TestProg1 and TestProg2
+         ...  
+         shell[2]% TestProg1 ; TestProg2
+         ... A sequential execution of TestProg1 and TestProg2
+         ...
+         shell[3]% exit
+      --&gt;q
+      uw1-320-lab:~$</code></pre><p></p>
+      <p class="p0">
+         Once your Shell.java is invoked, it should print out a command prompt:
+         </p><pre><code>shell[1]%</code></pre>
+
+         When a user types multiple commands, each delimited by '&amp;' or ';',
+         your Shell.java executes each of them as an independent child thread
+         with a SysLib.exec( ) system call. Note that the symbol '&amp;' means a
+         concurrent execution, while the symbol ';' means a sequential
+         execution. Thus, when encountering a delimiter ';', your Shell.java
+         needs to call SysLib.join( ) system call(s) in order to wait for
+         <b>this</b> child thread to be terminated. Since SysLib.join( ) may
+         return the ID of any child thread that has been previously terminated,
+         you have to repeat calling SysLib.join( ) until it returns the exact
+         ID of the child thread that you wants to wait for.
+      <p></p>
+
+      <p class="p0"> 
+         You do not need to implement standard I/O redirection or
+         pipes. You do not need to provide shell variables and programming
+         constructs, either. Only the required functionality of your Shell.java
+         is handling an arbitrary number of commands in a line. You may assume
+         that commands, arguments, and even delimiters are separated by
+         arbitrary amounts of spaces or tabs.
+      </p>
+
+      <p class="p0">
+         To test your Shell.java, use <i>PingPong.java</i> that is found in the same directory as <i>ThreadOS</i>. Your test should be
+      </p>
+      <p class="p0"> 
+         </p><pre><code>Shell[2]% PingPong abc 10000000 &amp; PingPong xyz 10000000 &amp; PingPong 123 10000000 &amp;
+            Shell[1]% PingPong abc 10000000 ; PingPong xyz 10000000 ; PingPong 123 10000000 ;
+         </code></pre>
+      <p></p>
+
+      <p class="p0"><b>The complete ThreadOS source code can be found in</b>
+         </p><ul>
+            <li><b>UW1-320 Linux machines: /usr/apps/CSS430/ThreadOS/</b></li>
+         </ul>
+      <p></p>
+
+      <p class="p0"> 
+         Copy all compiled class files into your directory and thereafter
+         compile your shell.java. Do not try to compile the ThreadOS source
+         code, some portion of which cannot be accessed. (Those are your future
+         assignments.)
+      </p>
+
+      <p class="p0"> 
+         <b>Hints:</b> In order to read a command line, you should use
+         SysLib.cin( StringBuffer s ) that returns a line of keyboard input to
+         the <a href="http://docs.oracle.com/javase/7/docs/api/">StringBuffer</a>
+         s. Parsing and splitting the line into words can be performed with the
+         <a href="http://docs.oracle.com/javase/7/docs/api/">StringTokenizer</a>
+         class found in java.util. For the same purpose, you can also use the
+         <i>SysLib.stringToArgs( String s )</i> utility function which is
+         much easier to use.
+      </p>
+
+      <h3 class="h0">5. What to Turn In</h3>
+
+      <p class="p0"> 
+         </p><ol>
+            <li>Part 1 must include:
+               <pre><code>
+                 Your processes.cpp source code
+                 An output when running:
+                 processes tty
+                 ps -A | grep ttys | wc -l
+
+                 processes Sys
+                 ps -A | grep Sys | wc -l
+
+                 processes user
+                 ps -A | grep user | wc -l
+              </code></pre>
+           </li>
+
+           <li>Part 2 must include:
+            <pre><code>
+              Shell.java
+              An output when testing your Shell.java with PingPong.java
+           </code></pre></li>
+
+           <li>Report:<br>
+              Document how to test your Shell.java.
+              Explain the algorithm of your processes.cpp and Shell.java
+              in some statements, using some flowcharts, or whatever.
+           </li>
+           <li>Softcopy:<br>
+              processes.cpp and Shell.java
+           </li>
+        </ol>
+     <p></p>
+
+     <p class="p0"> 
+        <a href="http://courses.washington.edu/css430/prog/gradeguide1.txt">gradeguide1.txt</a> is the grade guide for
+        the assignment 1.
+
+        </p><h3 class="h0">6. Note</h3>
+        <p class="p0"> 
+           Visit <a href="http://courses.washington.edu/css430/prog/assignment_s14.html"> <b>CSS430 Operating
+           Systems Assignments Home Page</b></a> in order to reassure your working
+           environment and turn-in procedure.
+        </p>
+        <h3 class="h0">7. FAQ</h3>
+        <p class="p0"> This website could answer your questions. Please click
+           <a href="http://courses.washington.edu/css430/prog/prog1_faq.html">here</a> before emailing the professor :-).
+        </p>
+     </div>
+  
+  </body></html>
